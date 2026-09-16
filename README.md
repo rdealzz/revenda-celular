@@ -19,6 +19,15 @@ LocalStorage em janelas privadas) e continuam lá ao fechar e reabrir.
 > Faça backups em JSON pela tela de **Ajustes**. Limpar os dados de navegação
 > apaga o banco local.
 
+## Publicar na web
+
+O repositório já traz o workflow `.github/workflows/deploy.yml`. Para ligar:
+**Settings → Pages → Source: GitHub Actions**. A partir daí, todo push na `main`
+publica o site em `https://rdealzz.github.io/revenda-celular/`.
+
+O build usa caminhos relativos (`base: './'`), então a pasta `dist/` também
+funciona aberta direto do disco ou em qualquer outra hospedagem estática.
+
 ## O que o sistema faz
 
 - **Painel** — 13 indicadores (investido em estoque, valor potencial, lucro
