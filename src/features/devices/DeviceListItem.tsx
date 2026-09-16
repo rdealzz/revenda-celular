@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Copy, Pencil, Star, Trash2 } from 'lucide-react'
+import { BadgeDollarSign, Copy, Pencil, Star, Trash2 } from 'lucide-react'
 import { DevicePhoto } from './DevicePhoto'
 import { StatusBadge } from '../../components/ui/Badge'
 import { IconButton } from '../../components/ui/Button'
@@ -10,11 +10,16 @@ import { cn } from '../../lib/cn'
 
 export interface DeviceActions {
   onOpen: (id: string) => void
+  onSell: (id: string) => void
   onEdit: (id: string) => void
   onDuplicate: (id: string) => void
   onDelete: (id: string) => void
   onToggleFavorite: (id: string) => void
 }
+
+/** Ações secundárias só aparecem no hover em telas grandes. */
+const HOVER_ONLY =
+  'transition-opacity duration-200 lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100'
 
 export function DeviceListItem({
   row,
@@ -47,7 +52,7 @@ export function DeviceListItem({
           'grid cursor-pointer grid-cols-[auto_1fr_auto] items-center gap-3 rounded-[18px] px-3 py-3',
           'transition-colors duration-200 hover:bg-[rgb(var(--hairline))] focus-visible:outline-none',
           'focus-visible:ring-2 focus-visible:ring-accent/50',
-          'lg:grid-cols-[48px_minmax(0,1.6fr)_repeat(4,minmax(0,1fr))_120px_112px] lg:gap-4',
+          'lg:grid-cols-[48px_minmax(0,1.6fr)_repeat(4,minmax(0,1fr))_120px_148px] lg:gap-4',
         )}
       >
         <DevicePhoto device={device} />
@@ -99,13 +104,23 @@ export function DeviceListItem({
         </div>
 
         <div
-          className="flex items-center justify-end gap-0.5 self-start opacity-100 transition-opacity duration-200 lg:self-center lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100"
+          className="flex items-center justify-end gap-0.5 self-start lg:self-center"
           onClick={(event) => event.stopPropagation()}
         >
+          {device.status !== 'vendido' && (
+            <IconButton
+              label="Registrar venda"
+              size="sm"
+              variant="ghost"
+              onClick={() => actions.onSell(device.id)}
+              icon={<BadgeDollarSign className="size-4 text-positive" />}
+            />
+          )}
           <IconButton
             label={device.favorite ? 'Remover dos favoritos' : 'Marcar como favorito'}
             size="sm"
             variant="ghost"
+            className={HOVER_ONLY}
             onClick={() => actions.onToggleFavorite(device.id)}
             icon={<Star className={cn('size-4', device.favorite && 'fill-caution text-caution')} />}
           />
@@ -113,6 +128,7 @@ export function DeviceListItem({
             label="Editar"
             size="sm"
             variant="ghost"
+            className={HOVER_ONLY}
             onClick={() => actions.onEdit(device.id)}
             icon={<Pencil className="size-4" />}
           />
@@ -120,7 +136,7 @@ export function DeviceListItem({
             label="Duplicar"
             size="sm"
             variant="ghost"
-            className="hidden sm:inline-flex"
+            className={cn(HOVER_ONLY, 'hidden sm:inline-flex')}
             onClick={() => actions.onDuplicate(device.id)}
             icon={<Copy className="size-4" />}
           />
@@ -128,6 +144,7 @@ export function DeviceListItem({
             label="Excluir"
             size="sm"
             variant="ghost"
+            className={HOVER_ONLY}
             onClick={() => actions.onDelete(device.id)}
             icon={<Trash2 className="size-4 text-negative" />}
           />

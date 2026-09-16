@@ -167,7 +167,7 @@ export function DeviceList({
       </div>
 
       <Card padded={false} className="overflow-hidden">
-        <div className="hidden grid-cols-[48px_minmax(0,1.6fr)_repeat(4,minmax(0,1fr))_120px_112px] gap-4 border-b border-[rgb(var(--hairline))] px-5 py-3 text-[11px] font-medium uppercase tracking-[0.06em] text-3 lg:grid">
+        <div className="hidden grid-cols-[48px_minmax(0,1.6fr)_repeat(4,minmax(0,1fr))_120px_148px] gap-4 border-b border-[rgb(var(--hairline))] px-5 py-3 text-[11px] font-medium uppercase tracking-[0.06em] text-3 lg:grid">
           <span />
           <span>Aparelho</span>
           <span>Investido</span>

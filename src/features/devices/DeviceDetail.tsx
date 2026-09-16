@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import {
   ArrowLeft,
   BadgeCheck,
+  BadgeDollarSign,
   Banknote,
   Copy,
   ExternalLink,
@@ -120,10 +121,30 @@ export function DeviceDetail({
         </div>
 
         <div className="flex gap-1.5 sm:flex-col">
-          <Button variant="primary" size="sm" icon={<Pencil className="size-4" />} onClick={() => actions.onEdit(device.id)}>
-            Editar
-          </Button>
+          {finance.isSold ? (
+            <Button variant="primary" size="sm" icon={<Pencil className="size-4" />} onClick={() => actions.onEdit(device.id)}>
+              Editar
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              size="sm"
+              icon={<BadgeDollarSign className="size-4" />}
+              onClick={() => actions.onSell(device.id)}
+            >
+              Registrar venda
+            </Button>
+          )}
           <div className="flex gap-1.5">
+            {!finance.isSold && (
+              <IconButton
+                label="Editar"
+                size="sm"
+                variant="secondary"
+                onClick={() => actions.onEdit(device.id)}
+                icon={<Pencil className="size-4" />}
+              />
+            )}
             <IconButton
               label="Duplicar"
               size="sm"

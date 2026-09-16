@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ImagePlus, Plus, Star, Trash2, X } from 'lucide-react'
+import { ImagePlus, Plus, SlidersHorizontal, Star, Trash2, X } from 'lucide-react'
 import { Modal } from '../../components/ui/Modal'
 import { Button, IconButton } from '../../components/ui/Button'
 import { Field, Input, MoneyInput, Segmented, Select, Textarea } from '../../components/ui/Field'
@@ -26,6 +26,8 @@ const PAYMENTS = ['Pix', 'Dinheiro', 'Cartão de crédito', 'Cartão de débito'
 
 type Section = 'ficha' | 'compra' | 'gastos' | 'venda'
 
+const isNewDevice = (device: Device) => !device.brand.trim() && !device.model.trim()
+
 export function DeviceForm({
   open,
   initial,
@@ -38,6 +40,8 @@ export function DeviceForm({
   onSubmit: (device: Device) => void
 }) {
   const [draft, setDraft] = useState<Device>(initial)
+  /** Cadastro novo abre no modo rápido: o essencial em um só lugar. */
+  const [detailed, setDetailed] = useState(() => !isNewDevice(initial))
   const [section, setSection] = useState<Section>('ficha')
   const [tagInput, setTagInput] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
@@ -73,12 +77,112 @@ export function DeviceForm({
     onSubmit({ ...draft, status })
   }
 
+  if (!detailed) {
+    return (
+      <Modal
+        open={open}
+        onClose={onClose}
+        title="Novo aparelho"
+        subtitle="Só o essencial — o resto pode entrar depois"
+        footer={
+          <>
+            <Button variant="ghost" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button variant="primary" disabled={!draft.model.trim()} onClick={submit}>
+              Salvar aparelho
+            </Button>
+          </>
+        }
+      >
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={(event) => {
+            event.preventDefault()
+            if (draft.model.trim()) submit()
+          }}
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Marca">
+              <Input
+                autoFocus
+                value={draft.brand}
+                onChange={(event) => patch({ brand: event.target.value })}
+                placeholder="Apple, Samsung, Xiaomi…"
+              />
+            </Field>
+            <Field label="Modelo">
+              <Input
+                value={draft.model}
+                onChange={(event) => patch({ model: event.target.value })}
+                placeholder="iPhone 13 Pro"
+              />
+            </Field>
+            <Field label="Valor pago">
+              <MoneyInput
+                value={draft.purchase.amount || null}
+                onValueChange={(value) => patch({ purchase: { ...draft.purchase, amount: value ?? 0 } })}
+              />
+            </Field>
+            <Field label="Valor pretendido" hint="Quanto pretende anunciar">
+              <MoneyInput
+                value={draft.sale.askingPrice}
+                onValueChange={(value) => patch({ sale: { ...draft.sale, askingPrice: value } })}
+              />
+            </Field>
+            <Field label="Data da compra">
+              <Input
+                type="date"
+                value={draft.purchase.date}
+                onChange={(event) => patch({ purchase: { ...draft.purchase, date: event.target.value } })}
+              />
+            </Field>
+            <Field label="Armazenamento" hint="Opcional">
+              <Input
+                value={draft.storage}
+                onChange={(event) => patch({ storage: event.target.value })}
+                placeholder="128 GB"
+              />
+            </Field>
+          </div>
+
+          <div className="flex items-center justify-between rounded-2xl bg-[rgb(var(--hairline))] px-4 py-3">
+            <span className="text-[13px] text-2">Lucro potencial</span>
+            <span
+              className={cn(
+                'tabular text-[15px] font-semibold',
+                finance.potentialProfit === null
+                  ? 'text-3'
+                  : finance.potentialProfit >= 0
+                    ? 'text-positive'
+                    : 'text-negative',
+              )}
+            >
+              {finance.potentialProfit === null ? '—' : formatCurrency(finance.potentialProfit)}
+            </span>
+          </div>
+
+          <Button
+            variant="ghost"
+            className="self-start"
+            icon={<SlidersHorizontal className="size-4" />}
+            onClick={() => setDetailed(true)}
+          >
+            Foto, gastos, IMEI e mais detalhes
+          </Button>
+
+          <button type="submit" hidden />
+        </form>
+      </Modal>
+    )
+  }
+
   return (
     <Modal
       open={open}
       onClose={onClose}
       size="lg"
-      title={initial.brand || initial.model ? 'Editar aparelho' : 'Novo aparelho'}
+      title={isNewDevice(initial) ? 'Novo aparelho' : 'Editar aparelho'}
       subtitle="Os cálculos são atualizados enquanto você digita"
       footer={
         <>

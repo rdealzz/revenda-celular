@@ -6,6 +6,7 @@ import { Dashboard } from './features/dashboard/Dashboard'
 import { DeviceDetail } from './features/devices/DeviceDetail'
 import { DeviceForm } from './features/devices/DeviceForm'
 import { DeviceList } from './features/devices/DeviceList'
+import { QuickSaleDialog } from './features/devices/QuickSaleDialog'
 import { Statistics } from './features/stats/Statistics'
 import { Alerts } from './features/alerts/Alerts'
 import { Settings } from './features/settings/Settings'
@@ -25,6 +26,7 @@ export default function App() {
   const { notify } = useToast()
 
   const [editing, setEditing] = useState<Device | null>(null)
+  const [selling, setSelling] = useState<Device | null>(null)
   const [deleting, setDeleting] = useState<Device | null>(null)
 
   const rows = useMemo(() => withFinance(devices), [devices])
@@ -40,6 +42,10 @@ export default function App() {
     onEdit: (id) => {
       const device = find(id)
       if (device) setEditing(device)
+    },
+    onSell: (id) => {
+      const device = find(id)
+      if (device) setSelling(device)
     },
     onDuplicate: async (id) => {
       const copy = await duplicate(id)
@@ -169,6 +175,18 @@ export default function App() {
             await save(device)
             setEditing(null)
             notify('Aparelho salvo')
+          }}
+        />
+      )}
+
+      {selling && (
+        <QuickSaleDialog
+          device={selling}
+          onClose={() => setSelling(null)}
+          onConfirm={async (device) => {
+            await save(device)
+            setSelling(null)
+            notify('Venda registrada')
           }}
         />
       )}
