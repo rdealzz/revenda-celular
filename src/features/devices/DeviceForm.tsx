@@ -83,7 +83,7 @@ export function DeviceForm({
         open={open}
         onClose={onClose}
         title="Novo aparelho"
-        subtitle="Só o essencial — o resto pode entrar depois"
+        subtitle="Comprado hoje. Marca, preço de venda e o resto entram quando quiser"
         footer={
           <>
             <Button variant="ghost" onClick={onClose}>
@@ -103,16 +103,9 @@ export function DeviceForm({
           }}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Marca">
-              <Input
-                autoFocus
-                value={draft.brand}
-                onChange={(event) => patch({ brand: event.target.value })}
-                placeholder="Apple, Samsung, Xiaomi…"
-              />
-            </Field>
             <Field label="Modelo">
               <Input
+                autoFocus
                 value={draft.model}
                 onChange={(event) => patch({ model: event.target.value })}
                 placeholder="iPhone 13 Pro"
@@ -124,42 +117,6 @@ export function DeviceForm({
                 onValueChange={(value) => patch({ purchase: { ...draft.purchase, amount: value ?? 0 } })}
               />
             </Field>
-            <Field label="Valor pretendido" hint="Quanto pretende anunciar">
-              <MoneyInput
-                value={draft.sale.askingPrice}
-                onValueChange={(value) => patch({ sale: { ...draft.sale, askingPrice: value } })}
-              />
-            </Field>
-            <Field label="Data da compra">
-              <Input
-                type="date"
-                value={draft.purchase.date}
-                onChange={(event) => patch({ purchase: { ...draft.purchase, date: event.target.value } })}
-              />
-            </Field>
-            <Field label="Armazenamento" hint="Opcional">
-              <Input
-                value={draft.storage}
-                onChange={(event) => patch({ storage: event.target.value })}
-                placeholder="128 GB"
-              />
-            </Field>
-          </div>
-
-          <div className="flex items-center justify-between rounded-2xl bg-[rgb(var(--hairline))] px-4 py-3">
-            <span className="text-[13px] text-2">Lucro potencial</span>
-            <span
-              className={cn(
-                'tabular text-[15px] font-semibold',
-                finance.potentialProfit === null
-                  ? 'text-3'
-                  : finance.potentialProfit >= 0
-                    ? 'text-positive'
-                    : 'text-negative',
-              )}
-            >
-              {finance.potentialProfit === null ? '—' : formatCurrency(finance.potentialProfit)}
-            </span>
           </div>
 
           <Button
@@ -168,7 +125,7 @@ export function DeviceForm({
             icon={<SlidersHorizontal className="size-4" />}
             onClick={() => setDetailed(true)}
           >
-            Foto, gastos, IMEI e mais detalhes
+            Marca, valor pretendido, foto, gastos e mais
           </Button>
 
           <button type="submit" hidden />
